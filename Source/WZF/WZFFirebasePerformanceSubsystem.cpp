@@ -60,6 +60,8 @@ void UWZFFirebaseTrace::InitializeTrace(UGameInstance* InGameInstance)
 
 void UWZFFirebaseTrace::OnTraceTimer()
 {
+	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("UWZFFirebaseTrace::OnTraceTimer"));
+	
 	FirebaseTrace.Stop();
 
 	FString traceName = TraceData.TraceName;
@@ -69,9 +71,14 @@ void UWZFFirebaseTrace::OnTraceTimer()
 		TotalTraceCount++;
 	}
 
+	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Try create trace: %s"), *traceName);
 	FirebaseTrace = UFirebasePerformanceLibrary::CreateTrace(traceName);
+
+	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Try start trace: %s"), *traceName);
 	FirebaseTrace.Start();
 
+	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Success start trace: %s"), *traceName);
+	
 	Metrics.Empty();
 	for (const auto& metricData : TraceData.Metrics)
 	{
@@ -91,8 +98,9 @@ void UWZFFirebaseTrace::OnMetricTimer()
 	{
 		if (metric.Value.IsValid())
 		{
+			UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Start Firebase metric [%s:%d]"), *metric.Key, metric.Value->GetValue());
 			FirebaseTrace.SetMetricValue(metric.Key, metric.Value->GetValue());
-			UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Firebase metric [%s:%d]"), *metric.Key, metric.Value->GetValue());
+			UE_LOG(LogWZFFirebaseTrace, Log, TEXT("End Firebase metric"));
 		}
 	}
 }
@@ -103,10 +111,12 @@ void UWZFFirebasePerformanceSubsystem::Initialize(FSubsystemCollectionBase& Coll
 
 	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Init UWZFFirebasePerformanceSubsystem"));
 
+	UFirebasePerformanceLibrary::SetInstrumentationEnabled(true);
+	UFirebasePerformanceLibrary::SetDataCollectionEnabled(true);
+	
 	const auto timerCallback = FTimerDelegate::CreateLambda([] {
 		UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Enable Firebase Perfomance flags"));
-		UFirebasePerformanceLibrary::SetInstrumentationEnabled(true);
-		UFirebasePerformanceLibrary::SetDataCollectionEnabled(true);
+		
 	});
 	FTimerHandle timer;
 	GetGameInstance()->GetTimerManager().SetTimer(timer, timerCallback, 5.f, false);
