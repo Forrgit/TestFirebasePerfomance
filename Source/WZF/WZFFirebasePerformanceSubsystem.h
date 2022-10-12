@@ -59,6 +59,16 @@ public:
 };
 
 UCLASS()
+class WZF_API UWZFTestIncrementalFirebaseMetric : public UWZFFirebaseMetric
+{
+	GENERATED_BODY()
+public:
+	virtual int64 GetValue() const override;
+
+	mutable int value = 0;
+};
+
+UCLASS()
 class WZF_API UWZFFirebaseTrace : public UObject
 {
 	GENERATED_BODY()
@@ -74,6 +84,7 @@ private:
 
 private:
 	FFirebaseTrace FirebaseTrace;
+	bool bStartedTrace = false;
 
 	TArray<TPair<FString, TStrongObjectPtr<UWZFFirebaseMetric>>> Metrics;
 

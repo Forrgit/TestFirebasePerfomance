@@ -50,6 +50,12 @@ int64 UWZFDeviceVolumeStateFirebaseMetric::GetValue() const
 #endif
 }
 
+int64 UWZFTestIncrementalFirebaseMetric::GetValue() const
+{
+	value++;
+	return value;
+}
+
 void UWZFFirebaseTrace::InitializeTrace(UGameInstance* InGameInstance)
 {
 	GameInstance = InGameInstance;
@@ -60,10 +66,13 @@ void UWZFFirebaseTrace::InitializeTrace(UGameInstance* InGameInstance)
 
 void UWZFFirebaseTrace::OnTraceTimer()
 {
-	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("UWZFFirebaseTrace::OnTraceTimer"));
-	
-	FirebaseTrace.Stop();
+	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("UWZFFirebaseTrace::OnTraceTimer %s, bStartedTrace: %d"), *TraceData.TraceName, bStartedTrace);
 
+	if(bStartedTrace)
+	{
+		FirebaseTrace.Stop();
+	}
+	
 	FString traceName = TraceData.TraceName;
 	if (TraceData.bIncrementTraceName)
 	{
@@ -71,13 +80,15 @@ void UWZFFirebaseTrace::OnTraceTimer()
 		TotalTraceCount++;
 	}
 
-	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Try create trace: %s"), *traceName);
-	FirebaseTrace = UFirebasePerformanceLibrary::CreateTrace(traceName);
+	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Try create and start trace: %s"), *traceName);
+	FirebaseTrace = UFirebasePerformanceLibrary::CreateAndStartTrace(traceName);
 
-	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Try start trace: %s"), *traceName);
-	FirebaseTrace.Start();
+	//UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Try start trace: %s"), *traceName);
+	//FirebaseTrace.Start();
 
 	UE_LOG(LogWZFFirebaseTrace, Log, TEXT("Success start trace: %s"), *traceName);
+
+	bStartedTrace = true;
 	
 	Metrics.Empty();
 	for (const auto& metricData : TraceData.Metrics)
