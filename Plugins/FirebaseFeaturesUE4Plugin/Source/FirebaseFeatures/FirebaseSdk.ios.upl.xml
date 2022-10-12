@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+
+	Copyright Pandores Marketplace 2022. All Rights Reserved. 
+
+-->
+<root>
+	<init>
+    <log text="Firebase init"/>
+		
+	<copyFile src="$S(ProjectDir)/Config/Firebase/GoogleService-Info.plist" dst="$S(PluginDir)/Config/Firebase/GoogleService-Info.plist" force="true"/>
+
+    <setString result="ApplicationIdDefaultValue" value="ca-app-pub-3940256099942544~3347511713"/>
+
+    <setBoolFromProperty   result="bCrashlytics"  ini="Engine" section="Firebase" property="CrashlyticsEnabled"      default="false"/>
+    <setBoolFromProperty   result="bEnabled"      ini="Engine" section="Firebase" property="FirebaseFeaturesEnabled" default="true"/>
+	<setBoolFromProperty   result="bAdMob"        ini="Engine" section="Firebase" property="AdMobEnabled"            default="true"/>
+    <setStringFromProperty result="ApplicationId" ini="Engine" section="Firebase" property="AdMobApplicationId"      default="ca-app-pub-3940256099942544~3347511713"/>
+
+	<setStringFromProperty result="OverrideAppId" ini="Engine" section="Firebase" property="iOSAdMobApplicationId" default=""/>
+
+		
+	<!--
+	    If the override AdMob App ID is set, override it.
+	-->
+	<setBoolIsEqual result="HasNoAppIdOverride" arg1="$S(OverrideAppId)" arg=""/>
+	<if condition="HasNoAppIdOverride">
+		<false>
+			<setString result="ApplicationId" value="$S(OverrideAppId)"/>
+		</false>
+	</if>
+		
+    <setBoolIsEqual result="IsApplicationIdNotDefined" arg1="$S(ApplicationId)" arg2="$S(ApplicationIdDefaultValue)"/>
+
+    <if condition="bEnabled">
+		<true>
+			<log text="Firebase Features is enabled."/>
+			<if condition="bAdMob">
+				<true>
+					<if condition="IsApplicationIdNotDefined">
+
+						<false>
+							<log text=""/>
+							<log text="   -> AdMob Application ID is '$S(ApplicationId)', taken from `DefaultEngine.ini`.`Firebase`.`ApplicationId`."/>
+						</false>
+
+						<true>
+							<log text=""/>
+							<log text=""/>
+							<log text="               ______________________________________________________________________________________________"></log>
+							<log text="               |                                                                                            |"></log>
+							<log text="               |                 ADMOB APPLICATION ID FOR FIREBASE FEATURES IS NOT SET.                     |"></log>
+							<log text="               |                                                                                            |"></log>
+							<log text="               |                 Please, set your AdMob application ID in DefaultEngine.ini                 |"></log>
+							<log text="               |                 to be able to use AdMob:                                                   |"></log>
+							<log text="               |                                                                                            |"></log>
+							<log text="               |                 [Firebase]                                                                 |"></log>
+							<log text="               |                 AdMobApplicationId=&quot;ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX&quot;                |"></log>
+							<log text="               |                                                                                            |"></log>
+							<log text="               ______________________________________________________________________________________________"></log>
+							<log text=""/>
+							<log text=""/>
+						</true>
+					</if>
+				</true>
+			</if>
+		</true>
+	</if>
+	</init>
+  
+  <iosPListUpdates>
+	<log text="Copying `GoogleService-Info.plist` into the build directory."/>
+	  
+	<!-- Depending on the type of build, the service file might be in different locations. It will fail only for the corresponding build type. -->
+	<copyFile src="$S(ProjectDir)/Config/Firebase/GoogleService-Info.plist"  dst="$S(BuildDir)/GoogleService-Info.plist" force="true"/>
+	<copyFile src="$S(ProjectDir)/Build/IOS/GoogleService-Info.plist" dst="$S(BuildDir)/GoogleService-Info.plist" force="true"/>
+	<!--copyFile src="$S(PluginDir)/../../Config/GoogleService-Info.plist"	 dst="$S(BuildDir)/GoogleService-Info.plist" force="true"/-->
+
+	<if condition="bAdMob">
+		<true>
+			<loopElements tag="dict">
+				<setElement result="GADAppIdKey" xml="&lt;key&gt;GADApplicationIdentifier&lt;/key&gt;"/>
+				<setElement result="GADAppIdVal" xml="&lt;string&gt;$S(ApplicationId)&lt;/string&gt;"/>
+
+				<addElement
+				tag="dict"
+				name="GADAppIdKey" />
+
+				<addElement
+				tag="dict"
+				name="GADAppIdVal" />
+
+			</loopElements>
+
+			<addElements tag="dict">
+				<key>SKAdNetworkItems</key>
+				<array>
+					<dict>
+						<key>SKAdNetworkIdentifier</key>
+						<string>cstr6suwn9.skadnetwork</string>
+					</dict>
+				</array>
+			</addElements>
+		</true>
+	</if>
+  </iosPListUpdates>
+</root>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

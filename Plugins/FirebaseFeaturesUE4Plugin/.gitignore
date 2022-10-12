@@ -1,0 +1,25 @@
+/Intermediate/
+/Binaries/
+.DS_Store
+
+/Tools/venv/
+/Tools/Libraries/
+/Tools/*.zip
+/Tools/.idea/
+
+### MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

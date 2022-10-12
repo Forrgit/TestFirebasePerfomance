@@ -1,0 +1,27 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "4.27.2-wzf_master-4.244317",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "WZF",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "FirebaseFeatures",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/81111c9d88144ab0968fd8953872a3d8"
+		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"IOS",
+		"Linux",
+		"Mac",
+		"Windows"
+	]
+}
